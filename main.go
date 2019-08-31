@@ -47,6 +47,7 @@ func find_outputs(network neural_network, hidden_nodes []float64) []float64 {
 
 func find_hidden_nodes(network neural_network, inode input) []float64 {
 	var hidden_nodes []float64
+	//Setting the offset
 	hidden_nodes = append(hidden_nodes, 1)
 
 	for i := 0; i < len(network.Input_to_hidden_weights); i++ {
@@ -63,9 +64,8 @@ func find_hidden_nodes(network neural_network, inode input) []float64 {
 //********************************************************************
 // Name:	create_neral_network
 // Description: This function randomly assigns all the weights to x
-//		where -.05 <= x <= .05, or to 0 depending on the bool
-//		rand, and creates the total weights based on the 
-//		hidden_count
+//		where -.05 <= x <= .05 or to 0 depending on the bool
+//		rand.
 // Return:	returns an neural network
 //********************************************************************
 
@@ -102,7 +102,7 @@ func create_neural_network(random bool) neural_network {
 //********************************************************************
 // Name:	run_test
 // Description: This function runs a test for accuracy on the given
-//		data set using the given neural network. It also 
+//		data set using the current neural network. It also 
 //		creates a confusion matrix when it runs.
 // Return:	A string that contains the accuracy of the run and 
 //		the confusion matrix.
@@ -125,7 +125,7 @@ func run_test(network neural_network, data []input) (string, [][]int) {
 		hidden_nodes := find_hidden_nodes(network, data[data_index])
 		outputs := find_outputs(network, hidden_nodes)
 
-		//this section finds the highest dot product in the array
+		// check for the highest dot product in the array
 		highest_product := 0
 		for input_index := 1; input_index < config.Output_Count; input_index++ {
 			if outputs[highest_product] < outputs[input_index] {
@@ -133,7 +133,7 @@ func run_test(network neural_network, data []input) (string, [][]int) {
 			}
 		}
 
-		//this is an if statment that checks if the neural_network was correct, and if not, it adds the data to the confusion matrix.
+		// a check to see if the neural_network was correct
 		if highest_product == data[data_index].position {
 			hits++
 		}
@@ -351,13 +351,13 @@ func main() {
 		log.Print("Using config file ", *configPathFlag)
 		file, err := os.Open(*configPathFlag)
 		if err != nil {
-			log.Fatal("cant open config: ", err)
+			log.Fatal("Error, Can not access config: ", err)
 		}
 
 		decoder := json.NewDecoder(file)
 		err = decoder.Decode(&config)
 		if err != nil {
-			log.Fatal("Error: Invalid config json: ", err)
+			log.Fatal("Error, Invalid config json: ", err)
 		}
 	}
 	training_data := read_csv()

@@ -31,16 +31,12 @@ type Config struct {
 
 func new_config() *Config {
 	return &Config{
-		Training_Data_File  : "train.csv",
-		Neural_Network_File : "Trained_Neural_Network.txt",
-		Output_File         : "Output.txt",
+		Neural_Network_File : "",
+		Output_File         : "",
 		CM_Enabled          : false,
 		Test_While_Training : false,
-		Progress_Tracker    : false,
+		Progress_Tracker    : true,
 		Default_Target      : true,
-		Input_Count         : 100,
-		Hidden_Count        : 10,
-		Output_Count        : 2,
 		Epoch_Count         : 50,
 		Momentum            : .9,
 		Learning_Rate       : .1,
