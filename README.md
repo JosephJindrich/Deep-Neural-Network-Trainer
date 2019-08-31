@@ -1,6 +1,8 @@
 # Deep Neural Network Trainer
 ### Summary
-This program is set up in such a way that you can run it to train a neural network based on JSON you pass through. There are several different variables you can pass into the file, and it will run accordingly based on those inputs. When the program finishes training the nerual network, it will turn the network into a JSON string, and output it into stdout, or a file of your choosing. This program does not apply the nerual network to a test set, it is only set up to train a network, and then output it. 
+This program is set up in such a way that you can run it to train a neural network using a JSON config file. There are several different variables you can pass into the file, and it will run accordingly based on those inputs. When the program finishes training the nerual network, it will turn the network into a JSON string, and output it into stdout, or a file of your choosing. This program does not apply the nerual network to a test set, it is only set up to train a network, and then output it.
+
+This program is being converted into a fully functional Neural Network trainer, and then converted into a deep Nerual Network trainer.
 
 ### Config file inputs
 **training\_data\_location** - (*string*) The file location of the training data. 
