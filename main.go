@@ -183,9 +183,6 @@ func training(training_data []input) (neural_network, string) {
 	network := create_neural_network(true)
 	training_str := "training data accuracy\n"
 
-	//first test with no training on the training data.
-
-	//Here I set up the previous weight difference holder
 	previous_weights := create_neural_network(false)
 
 	for epoch_index := 0; epoch_index < config.Epoch_Count; epoch_index++ {
@@ -194,6 +191,13 @@ func training(training_data []input) (neural_network, string) {
 			training_str += training_results
 			if config.CM_Enabled {
 				training_str += csv_styled_confusion_matrix(matrix)
+			}
+			if config.Progress_Tracker && epoch_index % config.Epoch_Update == 0 {
+				log.Print("Beggining Epoch #", epoch_index, ", current accuracy is ", training_results)
+			}
+		} else {
+			if config.Progress_Tracker && epoch_index % config.Epoch_Update == 0 {
+				log.Print("Beggining Epoch #", epoch_index)
 			}
 		}
 		for data_index := 0; data_index < len(training_data); data_index++ {
@@ -265,6 +269,9 @@ func training(training_data []input) (neural_network, string) {
 			}
 		}
 	}
+	if config.Progress_Tracker {
+		log.Print("The final Epoch has completed")
+	}
 	training_str += ", \n"
 	training_results, matrix := run_test(network, training_data)
 	training_str += training_results
@@ -289,6 +296,8 @@ func read_csv() []input {
 	for i:= 0; i < config.Output_Count; i++ {
 		input_type_count = append(input_type_count, 0)
 	}
+
+	log.Print("Reading training file ", config.Training_Data_File)
 	file, err := os.Open(config.Training_Data_File)
 	if err != nil {
 		log.Print("Error occured when opening ",
@@ -340,15 +349,29 @@ func read_csv() []input {
 		data = append(data, new_data_point)
 		input_type_count[new_data_point.position]++
 	}
+	log.Print("Finished loading all training data from memory.")
 	return data
 }
 
+//********************************************************************
+// Name:	setup_log
+// Description: This function sets up the log.
+//********************************************************************
+
+func setup_log () {
+	if(config.Log_File != "") {
+		log_file, err := os.OpenFile(config.Log_File, os.O_RDWR | os.O_CREATE | os.O_APPEND, 0644)
+		if err != nil {
+			log.Fatal("Error, Can not open ", config.Log_File , ": ", err)
+		}
+		log.SetOutput(log_file)
+	}
+}
+
 func main() {
-	log.Print("Starting Up\n")
 	var configPathFlag = flag.String("config", "./config.json", "path to configuration file")
 	flag.Parse()
 	if len(*configPathFlag) > 0 {
-		log.Print("Using config file ", *configPathFlag)
 		file, err := os.Open(*configPathFlag)
 		if err != nil {
 			log.Fatal("Error, Can not access config: ", err)
@@ -360,6 +383,9 @@ func main() {
 			log.Fatal("Error, Invalid config json: ", err)
 		}
 	}
+	setup_log()
+	log.Print("Starting Up")
+	log.Print("Using config file ", *configPathFlag)
 	training_data := read_csv()
 
 	network, results := training(training_data)
@@ -381,5 +407,5 @@ func main() {
 	} else {
 		fmt.Println([]byte(network_json))
 	}
-	log.Print("Finishing\n")
+	log.Print("Shutting down\n")
 }
