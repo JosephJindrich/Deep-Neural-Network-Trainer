@@ -144,13 +144,22 @@ func run_test(network neural_network, data []input) (string, [][]int) {
 	return fmt.Sprintf("%4f%%", (float64(hits)/float64(len(data)) * 100)), confusion_matrix
 }
 
+//********************************************************************
+// Name:	csv_styled_confusion_matrix
+// Description: This function takes in a confusion matrix and converts
+//		it into a csv styled string.
+// Return:	string - This string holds 
+//********************************************************************
 
-func create_confusion_matrix(matrix [][]int) string {
+func csv_styled_confusion_matrix(matrix [][]int) string {
 	confusion_matrix := "\nConfusion Matrix\n"
+	//Creating the top line of the confusion matrix.
 	for i := 0; i < config.Output_Count; i++ {
 		confusion_matrix += fmt.Sprintf(" ,%d", i)
 	}
 	confusion_matrix += fmt.Sprintf("\n")
+
+	//generating the left column of the confusion matrix, and each rows count.
 	for i := 0; i < config.Output_Count; i++ {
 		confusion_matrix += fmt.Sprintf("%d, ", i)
 		for j := 0; j < config.Output_Count; j++ {
@@ -184,7 +193,7 @@ func training(training_data []input) (neural_network, string) {
 			training_results, matrix := run_test(network, training_data)
 			training_str += training_results
 			if config.CM_Enabled {
-				training_str += create_confusion_matrix(matrix)
+				training_str += csv_styled_confusion_matrix(matrix)
 			}
 		}
 		for data_index := 0; data_index < len(training_data); data_index++ {
@@ -260,7 +269,7 @@ func training(training_data []input) (neural_network, string) {
 	training_results, matrix := run_test(network, training_data)
 	training_str += training_results
 	if config.CM_Enabled {
-		training_str += create_confusion_matrix(matrix)
+		training_str += csv_styled_confusion_matrix(matrix)
 	}
 	return network, training_str
 }
@@ -301,7 +310,7 @@ func read_csv() []input {
 
 		//Checking the Input's position in the input type array
 		var new_data_point input
-		new_input.position, err = strconv.Atoi(line[0])
+		new_data_point.position, err = strconv.Atoi(line[0])
 		if err != nil {
 			log.Print("Error occured while converting the input type on line ",
 				(len(data) + 1), " of the csv input file.\n\t\t", err)
@@ -310,14 +319,14 @@ func read_csv() []input {
 		if config.Default_Target {
 			//setting the target values for each input type.
 			for i := 0; i < config.Output_Count; i++ {
-				new_data_point.target = append(new_input.target, .1)
+				new_data_point.target = append(new_data_point.target, .1)
 			}
-			new_input.target[new_input.position] = .9
+			new_data_point.target[new_data_point.position] = .9
 		} else {
-			new_input.target = config.Targets[new_input.position]
+			new_data_point.target = config.Targets[new_data_point.position]
 		}
 
-		new_input.values = append(new_input.values, 1)
+		new_data_point.values = append(new_data_point.values, 1)
 		//parse through each data_entry and adds it to the data point.
 		for i := 1; i < len(line); i++ {
 			data_entry, err := strconv.Atoi(line[i])
@@ -326,10 +335,10 @@ func read_csv() []input {
 					(len(data) + 1), " of the csv input file.\n\t\t", err)
 				os.Exit(-1)
 			}
-			new_input.values = append(new_input.values,  float64(data_entry) / 255)
+			new_data_point.values = append(new_data_point.values,  float64(data_entry) / 255)
 		}
 		data = append(data, new_data_point)
-		input_type_count[new_input.position]++
+		input_type_count[new_data_point.position]++
 	}
 	return data
 }
