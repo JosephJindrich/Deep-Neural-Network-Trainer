@@ -7,11 +7,13 @@ This program is being converted into a fully functional Neural Network trainer, 
 ### Config file inputs
 **training\_data\_location** - (*string*) The file location of the training data. 
 * **Notice:** The training data needs to be a .csv file.
+
 **neural\_network\_file\_location** - (*string*) The location where the trained deep neural network will be stored when training finishes. Leaving empty prints to console.\
 **output\_file\_location** - (*string*) The location where output is sent. Leaving empty prints to console.\
 **collect\_training\_test\_data** - (*bool*) Set this to **true** if you want to see the Neural Networks accuracy on the training data after each epoch. The default is false.\
 **output\_confusion\_matrix** - (*bool*) Set this to **true** to recieve a confusion matrix with each test data set.the default is false.\
 * **Notice:** collect\_training\_test\_data must also be **true** for this to work.
+
 **output\_progress** - (*bool*) Set this to **true** and it will log to the output location every time an epoch finished. the default is true.\
 **use\_default\_target** - (*bool*) Set this to **true** to use the standard target = .9 and non\_target = .1.\
 **number\_of\_input\_values** - (*int*) This is the number of values each training input has associated with it.\
@@ -20,6 +22,7 @@ This program is being converted into a fully functional Neural Network trainer, 
 **number\_of\_epochs** - (*int*) The number of Epochs you want the neural netowrk to train through.\
 **target\_values** - (*[][]float64*) This is the training values you want to use. The must all be > 0 and < 1, and the matrix must be a square matrix.
 * **Notice:** These targets can only be used if use\_default\_targets is set to false.  
+
 **momentum** - (*float64*) Set this to what you want the momentum to be. It must be > 0 and < 1. The default is 0.9.\
 **learning\_rate** - (*float64*) Set this to what you want the learning rate to be. It must be > 0 and < 1. The default is 0.1.\
 
