@@ -10,8 +10,9 @@ This program is being converted into a fully functional Neural Network trainer, 
 
 **neural\_network\_file\_location** - (*string*) The location where the trained deep neural network will be stored when training finishes. Leaving empty prints to console.\
 **output\_file\_location** - (*string*) The location where output is sent. Leaving empty prints to console.\
-**collect\_training\_test\_data** - (*bool*) Set this to **true** if you want to see the Neural Networks accuracy on the training data after each epoch. The default is false.\
-**output\_confusion\_matrix** - (*bool*) Set this to **true** to recieve a confusion matrix with each test data set.the default is false.\
+**log\_file\_location** - (*string*) The location where logging is sent. Leaving empty prints to console.\
+**collect\_training\_test\_data** - (*bool*) Set this to **true** if you want to see the Neural Networks accuracy on the training data after each epoch. The default is **false**.\
+**output\_confusion\_matrix** - (*bool*) Set this to **true** to recieve a confusion matrix with each test data set.the default is **false**.\
 * **Notice:** collect\_training\_test\_data must also be **true** for this to work.
 
 **output\_progress** - (*bool*) Set this to **true** and it will log to the output location every time an epoch finished. the default is true.\
@@ -19,7 +20,10 @@ This program is being converted into a fully functional Neural Network trainer, 
 **number\_of\_input\_values** - (*int*) This is the number of values each training input has associated with it.\
 **number\_of\_hidden\_nodes** - (*int*) This is the number of hidden nodes you want the neural network to have.\
 **number\_of\_output\_nodes** - (*int*) This is the total number of different kinds of inputs there are.\
-**number\_of\_epochs** - (*int*) The number of Epochs you want the neural netowrk to train through.\
+**number\_of\_epochs** - (*int*) The number of epochs you want the neural netowrk to train through.\
+**epoch\_update** - (*int*) The number of epochs that need to pass for the log to output an update.\
+* **Notice:** output\_progress must be **true** for this to work.
+
 **target\_values** - (*[][]float64*) This is the training values you want to use. The must all be > 0 and < 1, and the matrix must be a square matrix.
 * **Notice:** These targets can only be used if use\_default\_targets is set to false.  
 
