@@ -27,6 +27,8 @@ This program is being converted into a fully functional Neural Network trainer, 
 **target\_values** - (*[][]float64*) This is the training values you want to use. The must all be > 0 and < 1, and the matrix must be a square matrix.
 * **Notice:** These targets can only be used if use\_default\_targets is set to false.  
 
+**minimum_value** - (*float64*) Set this to the lowest possible value of the data.\
+**maximum_value** - (*float64*) Set this to the highest possible value of the data.\
 **momentum** - (*float64*) Set this to what you want the momentum to be. It must be > 0 and < 1. The default is 0.9.\
 **learning\_rate** - (*float64*) Set this to what you want the learning rate to be. It must be > 0 and < 1. The default is 0.1.\
 
