@@ -1,7 +1,7 @@
-#Neural Network Trainer
+# Neural Network Trainer
 This program is set up in such a way that you can run it to train a neural network based on JSON you pass through. There are several different variables you can pass into the file, and it will run accordingly based on those inputs. When the program finishes training the nerual network, it will turn the network into a JSON string, and output it into stdout, or a file of your choosing. This program does not apply the nerual network to a test set, it is only set up to train a network, and then output it. 
 
-##Config File Inputs
+## Config File Inputs
 	**training_data_location**(string) - Pass a string containing the path to the training data. The training data needs to be a .csv file.
 	**neural_network_file_location**(string) - pass a string that will be the name of the file this writes the JSON string to.
 	**output_file_location**(string) - This is the path to wherever you want any other output the program would write to go.
@@ -19,7 +19,7 @@ This program is set up in such a way that you can run it to train a neural netwo
 
 
 
-##How to format your training document
+## How to format your training document
 	1. The format of this file needs to be a .csv. 
 	2. Each new input needs to be on it's own line. 
 	3. Each line has to have equal number of values. 
@@ -28,5 +28,5 @@ This program is set up in such a way that you can run it to train a neural netwo
 	   * Each input that starts with the same number should have the same target values. 
 	5. Every value in the input needs to be seperated with a comma and each input on a new line of the document. 
 
-##Example data format
+## Example data format
 	Example training format can be found here <XXXXXXXXXXLINK_TO_TRAINING_CSVXXXXXXXXXX>.
