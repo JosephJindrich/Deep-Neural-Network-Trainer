@@ -344,7 +344,7 @@ func read_csv() []input {
 					(len(data) + 1), " of the csv input file.\n\t\t", err)
 				os.Exit(-1)
 			}
-			new_data_point.values = append(new_data_point.values,  float64(data_entry) / 255)
+			new_data_point.values = append(new_data_point.values,  (float64(data_entry) - config.Min) / (config.Max - config.Min))
 		}
 		data = append(data, new_data_point)
 		input_type_count[new_data_point.position]++

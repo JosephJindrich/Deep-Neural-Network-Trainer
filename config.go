@@ -27,6 +27,8 @@ type Config struct {
 	Output_Count            int           `json:"number_of_output_nodes"`
 	Epoch_Count             int           `json:"number_of_epochs"`
 	Targets                 [][]float64   `json:"target_values"`
+	Max                     float64       `json:"value_maximum"`
+	Min                     float64       `json:"value_minimum"`
 	Momentum                float64       `json:"momentum"`
 	Learning_Rate           float64       `json:"learning_rate"`
 }
@@ -41,6 +43,7 @@ func new_config() *Config {
 		Progress_Tracker    : true,
 		Default_Target      : true,
 		Epoch_Update        : 1,
+		Hidden_Count        : 20,
 		Epoch_Count         : 50,
 		Momentum            : .9,
 		Learning_Rate       : .1,

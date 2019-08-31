@@ -8,6 +8,8 @@
 	"output_progress":true,
 	"use_default_target":true,
 	"number_of_input_values":785,
+	"value_maximum":255,
+	"value_minimum":0,
 	"number_of_hidden_nodes":20,
 	"number_of_output_nodes":10,
 	"epoch_update":5,
