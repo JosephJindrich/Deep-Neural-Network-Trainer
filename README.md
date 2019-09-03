@@ -5,21 +5,23 @@ This program is set up in such a way that you can run it to train a neural netwo
 This program is being converted into a fully functional Neural Network trainer, and then converted into a deep Nerual Network trainer.
 
 ### Config file inputs
-**training\_data\_location** - (*string*) The file location of the training data. 
+**data\_file\_location** - (*string*) The file location of the dataset to be used in training or testing.
 * **Notice:** The training data needs to be a .csv file.
 
 **neural\_network\_file\_location** - (*string*) The location where the trained deep neural network will be stored when training finishes. Leaving empty prints to console.\
 **output\_file\_location** - (*string*) The location where output is sent. Leaving empty prints to console.\
 **log\_file\_location** - (*string*) The location where logging is sent. Leaving empty prints to console.\
+**true_if_training** - (*bool*) Setting this bool to **true** will make the program train a new neural network, and setting it to **false** will instead test a Neural Network that this program creates.\
 **collect\_training\_test\_data** - (*bool*) Set this to **true** if you want to see the Neural Networks accuracy on the training data after each epoch. The default is **true**.\
 **output\_confusion\_matrix** - (*bool*) Set this to **true** to recieve a confusion matrix with each test data set.the default is **false**.\
 * **Notice:** collect\_training\_test\_data must also be **true** for this to work.
 
 **output\_progress** - (*bool*) Set this to **true** and it will log to the output location every time an epoch finished. the default is **true**.\
 **use\_default\_target** - (*bool*) Set this to **true** to use the standard target = .9 and non\_target = .1. The default is **true**\
+**number\_of\_hidden\_nodes** - (*int*) This is an array that will hold the number of hidden nodes you want each hidden layer of the deep neural network to have.\
 **number\_of\_input\_values** - (*int*) This is the number of values each training input has associated with it.\
 **number\_of\_output\_nodes** - (*int*) This is the total number of different kinds of inputs there are.\
-**number\_of\_hidden\_nodes** - (*int*) This is the number of hidden nodes you want the neural network to have. The default is 20.\
+**number\_of\_hidden\_layers** - (*int*) This is the number of hidden layers you want the deep neural network to have.\
 **number\_of\_epochs** - (*int*) The number of epochs you want the neural netowrk to train through. The default is 50.\
 **epoch\_update** - (*int*) The number of epochs that need to pass for the log to output an update. The default is 1.
 * **Notice:** output\_progress must be **true** for this to work.
