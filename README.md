@@ -10,6 +10,7 @@ Just an asside, this Deep Neural Network works, but it is not perfect. I am not 
 
 **neural\_network\_file\_location** - (*string*) The location where the trained deep neural network will be stored when training finishes. Leaving empty prints to console.\
 * **Notice:** if you have **true_if_training** set to **false** this will look for a deep neural network formated in the same way my program formats deep neural networks to use to test the data set.
+
 **output\_file\_location** - (*string*) The location where output is sent. Leaving empty prints to console.\
 **log\_file\_location** - (*string*) The location where logging is sent. Leaving empty prints to console.\
 **true_if_training** - (*bool*) Setting this bool to **true** will make the program train a new neural network, and setting it to **false** will instead test a Neural Network that this program creates.\
@@ -45,4 +46,4 @@ Just an asside, this Deep Neural Network works, but it is not perfect. I am not 
 5. Every value in the input needs to be seperated with a comma and each input on a new line of the document. 
 
 ### Example data format
-Example training format can be found [here](https://www.kaggle.com/oddrationale/mnist-in-csv#mnist_test.csv)\
+Example training format can be found [here](https://www.kaggle.com/oddrationale/mnist-in-csv#mnist_test.csv)
