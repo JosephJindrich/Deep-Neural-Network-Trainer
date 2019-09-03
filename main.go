@@ -24,13 +24,13 @@ var config *Config = new_config()
 // Return:	returns an array of the output nodes.
 //********************************************************************
 
-func find_outputs(network neural_network, hidden_nodes []float64) []float64 {
+func find_outputs(network [][][]float64, hidden_nodes [][]float64) []float64 {
 	var outputs []float64
 	for i := 0; i < config.Output_Count; i++ {
 		var dot_product float64
 		dot_product = 0
-		for j := 0; j < len(hidden_nodes); j++ {
-			dot_product += network.Hidden_to_output_weights[i][j] * hidden_nodes[j]
+		for j := 0; j < config.Hidden_Count[config.Hidden_Layers - 1]; j++ {
+			dot_product += network[config.Hidden_Layers][i][j] * hidden_nodes[len(hidden_nodes) - 1][j]
 		}
 		outputs = append(outputs, (1 / (1 + math.Pow(2.71828, -dot_product))))
 	}
@@ -45,18 +45,33 @@ func find_outputs(network neural_network, hidden_nodes []float64) []float64 {
 // Return:	returns an array of the hidden nodes
 //********************************************************************
 
-func find_hidden_nodes(network neural_network, inode input) []float64 {
-	var hidden_nodes []float64
+func find_hidden_nodes(network [][][]float64, inode input) [][]float64 {
+	var hidden_nodes [][]float64
 	//Setting the offset
-	hidden_nodes = append(hidden_nodes, 1)
+	for i := 0; i < config.Hidden_Layers; i++ {
+		var temp []float64
+		temp = append(temp, 1)
+		hidden_nodes = append(hidden_nodes, temp)
+	}
 
-	for i := 0; i < len(network.Input_to_hidden_weights); i++ {
+	for i := 0; i < config.Hidden_Count[0]; i++ {
 		var dot_product float64
 		dot_product = 0
 		for j := 0; j < config.Input_Count; j++ {
-			dot_product += inode.values[j] * network.Input_to_hidden_weights[i][j]
+			dot_product += inode.values[j] * network[0][i][j]
 		}
-		hidden_nodes = append(hidden_nodes, (1 / (1 + math.Pow(2.71828, -dot_product))))
+		hidden_nodes[0] = append(hidden_nodes[0], (1 / (1 + math.Pow(2.71828, -dot_product))))
+	}
+
+	for i := 1; i < config.Hidden_Layers; i++ {
+		for j := 0; j < config.Hidden_Count[i]; j++ {
+			var dot_product float64
+			dot_product = 0
+				for k := 0; k < config.Hidden_Count[i - 1] + 1; k++ {
+					dot_product += hidden_nodes[i - 1][k] * network[i][j][k]
+				}
+			hidden_nodes[i] = append(hidden_nodes[i], (1 / (1 + math.Pow(2.71828, -dot_product))))
+		}
 	}
 	return hidden_nodes
 }
@@ -69,31 +84,53 @@ func find_hidden_nodes(network neural_network, inode input) []float64 {
 // Return:	returns an neural network
 //********************************************************************
 
-func create_neural_network(random bool) neural_network {
-	var network neural_network
-	for i := 0; i < config.Hidden_Count; i++ {
-		var Input_to_hidden_weights []float64
+func create_neural_network(random bool) [][][]float64 {
+	var network [][][]float64
+
+	// Initializing the Value to first hidden layer weight.
+	var first_layer [][]float64
+	for i := 0; i < config.Hidden_Count[0]; i++ {
+		var new_weights []float64
 		for j := 0; j < config.Input_Count; j++ {
 			if(random){
-				Input_to_hidden_weights = append(Input_to_hidden_weights, (rand.Float64() / 10) - .05)
+				new_weights = append(new_weights, (rand.Float64() / 10) - .05)
 			} else {
-				Input_to_hidden_weights = append(Input_to_hidden_weights, 0)
+				new_weights = append(new_weights, 0)
 			}
 		}
-		network.Input_to_hidden_weights = append(network.Input_to_hidden_weights, Input_to_hidden_weights)
+		first_layer = append(first_layer, new_weights)
+	}
+	network = append(network, first_layer)
+
+	for i := 0; i < config.Hidden_Layers - 1; i++ {
+		var new_layer [][]float64
+		for j := 0; j < config.Hidden_Count[i]; j++ {
+			var new_weights []float64
+			for k := 0; k < config.Hidden_Count[i + 1] + 1; k++ {
+				if(random){
+					new_weights = append(new_weights, (rand.Float64() / 10) - .05)
+				} else {
+					new_weights = append(new_weights, 0)
+				}
+			}
+			new_layer = append(new_layer, new_weights)
+		}
+		network = append(network, new_layer)
 	}
 
+	var final_layer [][]float64
 	for i := 0; i < config.Output_Count; i++ {
-		var Hidden_to_output_weights []float64
-		for j := 0; j < config.Hidden_Count + 1; j++ {
+		var new_weights []float64
+		for j := 0; j < config.Hidden_Count[config.Hidden_Layers - 1] + 1; j++ {
 			if(random){
-				Hidden_to_output_weights = append(Hidden_to_output_weights, (rand.Float64() / 10) - .05)
+				new_weights = append(new_weights, (rand.Float64() / 10) - .05)
 			} else {
-				Hidden_to_output_weights = append(Hidden_to_output_weights, 0)
+				new_weights = append(new_weights, 0)
 			}
 		}
-		network.Hidden_to_output_weights = append(network.Hidden_to_output_weights, Hidden_to_output_weights)
+		final_layer = append(final_layer, new_weights)
 	}
+	network = append(network, final_layer)
 
 	return network
 }
@@ -108,7 +145,7 @@ func create_neural_network(random bool) neural_network {
 //		the confusion matrix.
 //********************************************************************
 
-func run_test(network neural_network, data []input) (string, [][]int) {
+func run_test(network [][][]float64, data []input) (string, [][]int) {
 	hits := 0
 	var confusion_matrix [][]int
 	if config.CM_Enabled {
@@ -179,7 +216,7 @@ func csv_styled_confusion_matrix(matrix [][]int) string {
 //		the test data and training data accuracies.
 //********************************************************************
 
-func training(training_data []input) (neural_network, string) {
+func training(training_data []input) ([][][]float64, string) {
 	network := create_neural_network(true)
 	training_str := "training data accuracy\n"
 
@@ -203,70 +240,109 @@ func training(training_data []input) (neural_network, string) {
 		for data_index := 0; data_index < len(training_data); data_index++ {
 
 			hidden_nodes := find_hidden_nodes(network, training_data[data_index])
-
 			//This section prepairs the nodes for dropout to acoid overfitting
-			var train_hidden_node []bool
-			train_hidden_node = append(train_hidden_node, true)
-			for i := 0; i < config.Hidden_Count; i++ {
-				if(rand.Int() % 2 == 1) {
-					train_hidden_node = append(train_hidden_node, true)
-				} else {
-					train_hidden_node = append(train_hidden_node, false)
+			var train_hidden_node [][]bool
+			for i := 0; i < config.Hidden_Layers; i++ {
+				var new_trainer []bool
+				new_trainer = append(new_trainer, true)
+				for j := 0; j < config.Hidden_Count[i]; j++ {
+					if(rand.Int() % 2 == 1) {
+						new_trainer = append(new_trainer, true)
+					} else {
+						new_trainer = append(new_trainer, true)
+					}
 				}
+				train_hidden_node = append(train_hidden_node, new_trainer)
 			}
+			//###################################################################################
+			//###################################################################################
+			//###################################################################################
+			//###################################################################################
+			//###################################################################################
+			//###################################################################################
 
 			//here we get the error_terms for the hidden_to_output weights
 			//term = output(1 - output)(target - output)
+			var hidden_error_term [][]float64
 			var output_error_term []float64
-			for k := 0; k < config.Output_Count; k++ {
+			for k := 0; k  < config.Output_Count; k++ {
 				var dot_product float64
 				dot_product = 0
-				for j := 0; j < len(hidden_nodes); j++ {
-					if(train_hidden_node[j]) {
-						dot_product += network.Hidden_to_output_weights[k][j] * hidden_nodes[j]
+				for j := 0; j < config.Hidden_Count[config.Hidden_Layers - 1] + 1; j++ {
+					if(train_hidden_node[config.Hidden_Layers - 1][j]) {
+						dot_product += network[config.Hidden_Layers][k][j] * hidden_nodes[config.Hidden_Layers - 1][j]
 					}
 				}
 				output := 1 / (1 + math.Pow(2.71828, -dot_product))
 				output_error_term = append(output_error_term, output * (1 - output) * (training_data[data_index].target[k] - output))
 			}
+			hidden_error_term = append(hidden_error_term, output_error_term)
 
 			//here we get the error terms for the Input_to_hidden weights
-			var hidden_error_term []float64
-			for j := 1; j < len(hidden_nodes); j++ {
-				if(train_hidden_node[j]) {
-					var dot_product float64
-					dot_product = 0
-					for k := 0; k < config.Output_Count; k++ {
-						dot_product += network.Hidden_to_output_weights[k][j] * output_error_term[k]
+			for layer_index := config.Hidden_Layers - 1; layer_index >= 0; layer_index-- {
+				var new_error_term []float64
+				for j := 1; j < config.Hidden_Count[layer_index] + 1; j++ {
+					if(train_hidden_node[layer_index][j]) {
+						var dot_product float64
+						dot_product = 0
+						for k := 0; k < len(hidden_error_term[len(hidden_error_term) - 1]); k++ {
+							dot_product += network[layer_index + 1][k][j] * hidden_error_term[len(hidden_error_term) - 1][k]
+						}
+						new_error_term = append(new_error_term, (hidden_nodes[layer_index][j] * (1 - hidden_nodes[layer_index][j]) * dot_product))
+					} else {
+						new_error_term = append(new_error_term, 0)
 					}
-					hidden_error_term = append(hidden_error_term, (hidden_nodes[j] * (1 - hidden_nodes[j]) * dot_product))
-				} else {
-					hidden_error_term = append(hidden_error_term, 0)
 				}
+				hidden_error_term = append(hidden_error_term, new_error_term)
 			}
 
+			//###################################################################################
+			//###################################################################################
+			//###################################################################################
 
 			//adjusting the input to hidden weights using the output error term.
 			for k := 0; k < config.Output_Count; k++ {
-				for j := 0; j < len(hidden_nodes); j++ {
-					if(train_hidden_node[j]) {
-						difference := config.Learning_Rate * output_error_term[k] * hidden_nodes[j] + config.Momentum * previous_weights.Hidden_to_output_weights[k][j]
-						network.Hidden_to_output_weights[k][j] += difference
-						previous_weights.Hidden_to_output_weights[k][j] = difference
+				var layer_index = config.Hidden_Layers - 1
+				for j := 0; j < config.Hidden_Count[layer_index] + 1; j++ {
+					if(train_hidden_node[layer_index][j]) {
+						difference := config.Learning_Rate * hidden_error_term[0][k] * hidden_nodes[layer_index][j] +
+								config.Momentum * previous_weights[config.Hidden_Layers][k][j]
+						network[config.Hidden_Layers][k][j] += difference
+						previous_weights[config.Hidden_Layers][k][j] = difference
+					}
+				}
+			}
+
+			for layer_index := config.Hidden_Layers - 2; layer_index > 0; layer_index-- {
+				for k := 0; k < config.Hidden_Count[layer_index + 1]; k++ {
+					for j := 0; j < config.Hidden_Count[layer_index] + 1; j++ {
+						if(train_hidden_node[layer_index][j]) {
+							difference := config.Learning_Rate * hidden_error_term[(config.Hidden_Layers - 1)- layer_index][k] * hidden_nodes[layer_index][j] +
+									config.Momentum * previous_weights[layer_index + 1][k][j]
+							network[layer_index + 1][k][j] += difference
+							previous_weights[layer_index + 1][k][j] = difference
+						}
 					}
 				}
 			}
 
 			//adjusting the input to hidden weights using the hidden error term.
-			for j := 0; j < config.Hidden_Count; j++ {
-				if(train_hidden_node[j + 1]) {
+			for j := 0; j < config.Hidden_Count[0]; j++ {
+				if(train_hidden_node[0][j + 1]) {
 					for i := 0; i < config.Input_Count; i++ {
-						difference := config.Learning_Rate * hidden_error_term[j] * training_data[data_index].values[i] + config.Momentum * previous_weights.Input_to_hidden_weights[j][i]
-						network.Input_to_hidden_weights[j][i] += difference
-						previous_weights.Input_to_hidden_weights[j][i] = difference
+						difference := config.Learning_Rate * hidden_error_term[config.Hidden_Layers][j] *
+							training_data[data_index].values[i] + config.Momentum * previous_weights[0][j][i]
+						network[0][j][i] += difference
+						previous_weights[0][j][i] = difference
 					}
 				}
 			}
+			//###################################################################################
+			//###################################################################################
+			//###################################################################################
+			//###################################################################################
+			//###################################################################################
+			//###################################################################################
 		}
 	}
 	if config.Progress_Tracker {
@@ -297,11 +373,11 @@ func read_csv() []input {
 		input_type_count = append(input_type_count, 0)
 	}
 
-	log.Print("Reading training file ", config.Training_Data_File)
-	file, err := os.Open(config.Training_Data_File)
+	log.Print("Reading data file ", config.Data_File)
+	file, err := os.Open(config.Data_File)
 	if err != nil {
 		log.Print("Error occured when opening ",
-			config.Training_Data_File, "\n", err)
+			config.Data_File, "\n", err)
 		os.Exit(-1)
 	}
 	reader := csv.NewReader(bufio.NewReader(file))
@@ -313,7 +389,7 @@ func read_csv() []input {
 			break
 		} else if err != nil {
 			log.Println("Error occured while reading through ",
-				    config.Training_Data_File + "\n\t\t", err)
+				    config.Data_File + "\n\t\t", err)
 			os.Exit(-1)
 		}
 
@@ -386,10 +462,45 @@ func main() {
 	setup_log()
 	log.Print("Starting Up")
 	log.Print("Using config file ", *configPathFlag)
-	training_data := read_csv()
+	data := read_csv()
+	var network [][][]float64
+	results := ""
 
-	network, results := training(training_data)
+	if config.Training {
+		network, results = training(data)
 
+		network_json, err := json.Marshal(network)
+		if err != nil {
+			log.Println("Error while marshaling The trained Nerual Network into JSON.\n", err)
+			os.Exit(-1)
+		}
+
+		if config.Neural_Network_File != "" {
+			ioutil.WriteFile(config.Neural_Network_File, []byte(network_json), 0644)
+		} else {
+			fmt.Println([]byte(network_json))
+		}
+	} else {
+		log.Print("Reading Trained Neural Network File ", config.Neural_Network_File)
+		/*
+		file, err := os.Open(config.Neural_Network_File)
+		if err != nil {
+			log.Print("Error occured when opening ",
+				config.Neural_Network_File, "\n", err)
+			os.Exit(-1)
+		}
+		reader := bufio.NewReader(file)
+		line, err := reader.Read()
+		if err != nil {
+			log.Println("Error occured while reading through ",
+				    config.Neural_Network_File + "\n\t\t", err)
+			os.Exit(-1)
+		}
+		*/
+		line, _ := ioutil.ReadFile(config.Neural_Network_File)
+		json.Unmarshal([]byte(line), &network)
+		results, _ = run_test(network, data)
+	}
 
 	if config.Output_File != "" {
 		ioutil.WriteFile(config.Output_File, []byte(results), 0644)
@@ -397,15 +508,6 @@ func main() {
 		fmt.Println(results)
 	}
 
-	network_json, err := json.Marshal(network)
-	if err != nil {
-		log.Println("Error while marshaling The trained Nerual Network into JSON.\n", err)
-		os.Exit(-1)
-	}
-	if config.Neural_Network_File != "" {
-		ioutil.WriteFile(config.Neural_Network_File, []byte(network_json), 0644)
-	} else {
-		fmt.Println([]byte(network_json))
-	}
+
 	log.Print("Shutting down\n")
 }
