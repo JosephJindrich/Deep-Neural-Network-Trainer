@@ -20,7 +20,8 @@ var config *Config = new_config()
 //********************************************************************
 // Name:	find_outputs
 // Description: This function calculates all the output nodes using 
-//		the hidden nodes and the weight associated with them.
+//		the last layer of hidden nodes and the weights
+//		associated with them.
 // Return:	returns an array of the output nodes.
 //********************************************************************
 
@@ -42,18 +43,19 @@ func find_outputs(network [][][]float64, hidden_nodes [][]float64) []float64 {
 // Name:	find_hidden_nodes
 // Description: This function calculates the hidden nodes using the 
 //		input valuse and the weights associated with them
-// Return:	returns an array of the hidden nodes
+// Return:	returns a 2D array of the hidden nodes
 //********************************************************************
 
 func find_hidden_nodes(network [][][]float64, inode input) [][]float64 {
 	var hidden_nodes [][]float64
-	//Setting the offset
+	// Setting the offset for each layer of hidden nodes.
 	for i := 0; i < config.Hidden_Layers; i++ {
 		var temp []float64
 		temp = append(temp, 1)
 		hidden_nodes = append(hidden_nodes, temp)
 	}
 
+	// Using the Input count to set up the first layer of Hidden nodes.
 	for i := 0; i < config.Hidden_Count[0]; i++ {
 		var dot_product float64
 		dot_product = 0
@@ -63,6 +65,7 @@ func find_hidden_nodes(network [][][]float64, inode input) [][]float64 {
 		hidden_nodes[0] = append(hidden_nodes[0], (1 / (1 + math.Pow(2.71828, -dot_product))))
 	}
 
+	// Using each previous layer of hidden nodes to calculate the next layer of hidden nodes.
 	for i := 1; i < config.Hidden_Layers; i++ {
 		for j := 0; j < config.Hidden_Count[i]; j++ {
 			var dot_product float64
@@ -77,17 +80,18 @@ func find_hidden_nodes(network [][][]float64, inode input) [][]float64 {
 }
 
 //********************************************************************
-// Name:	create_neral_network
+// Name:	create_deep_neural_network
 // Description: This function randomly assigns all the weights to x
 //		where -.05 <= x <= .05 or to 0 depending on the bool
 //		rand.
-// Return:	returns an neural network
+// Return:	returns a 3D array of weights as the deep neural 
+//		network
 //********************************************************************
 
-func create_neural_network(random bool) [][][]float64 {
+func create_deep_neural_network(random bool) [][][]float64 {
 	var network [][][]float64
 
-	// Initializing the Value to first hidden layer weight.
+	// Initializing the weights from the input values, to the first hidden layer.
 	var first_layer [][]float64
 	for i := 0; i < config.Hidden_Count[0]; i++ {
 		var new_weights []float64
@@ -102,6 +106,7 @@ func create_neural_network(random bool) [][][]float64 {
 	}
 	network = append(network, first_layer)
 
+	// Initializing the weights from each previous hidden layer, to the next hidden layer.
 	for i := 0; i < config.Hidden_Layers - 1; i++ {
 		var new_layer [][]float64
 		for j := 0; j < config.Hidden_Count[i]; j++ {
@@ -118,6 +123,7 @@ func create_neural_network(random bool) [][][]float64 {
 		network = append(network, new_layer)
 	}
 
+	// Initializing the weights from the last hidden layer, to the outputs.
 	var final_layer [][]float64
 	for i := 0; i < config.Output_Count; i++ {
 		var new_weights []float64
@@ -139,15 +145,16 @@ func create_neural_network(random bool) [][][]float64 {
 //********************************************************************
 // Name:	run_test
 // Description: This function runs a test for accuracy on the given
-//		data set using the current neural network. It also 
+//		data set using a deep neural network. It can also 
 //		creates a confusion matrix when it runs.
-// Return:	A string that contains the accuracy of the run and 
+// Return:	A string that contains the accuracy of the run, and 
 //		the confusion matrix.
 //********************************************************************
 
 func run_test(network [][][]float64, data []input) (string, [][]int) {
 	hits := 0
 	var confusion_matrix [][]int
+	// Initializing the confusion matrix
 	if config.CM_Enabled {
 		for i := 0; i < config.Output_Count; i++ {
 			var new_line []int;
@@ -185,7 +192,7 @@ func run_test(network [][][]float64, data []input) (string, [][]int) {
 // Name:	csv_styled_confusion_matrix
 // Description: This function takes in a confusion matrix and converts
 //		it into a csv styled string.
-// Return:	string - This string holds 
+// Return:	A string holding the newly styled Confusion matrix.
 //********************************************************************
 
 func csv_styled_confusion_matrix(matrix [][]int) string {
@@ -209,18 +216,18 @@ func csv_styled_confusion_matrix(matrix [][]int) string {
 
 //********************************************************************
 // Name:	training
-// Description: This function trains the nerual network for 50 epochs
-//		and also runs a test in between every epoch for 
-//		accuracy data.
+// Description: This function trains a deep nerual network for however
+//		many epochs are specified in the confifg, and also 
+//		runs a test in between every epoch for accuracy data.
 // Return:	returns a trained neural network and a string for both
-//		the test data and training data accuracies.
+//		the accuracies.
 //********************************************************************
 
 func training(training_data []input) ([][][]float64, string) {
-	network := create_neural_network(true)
+	network := create_deep_neural_network(true)
 	training_str := "training data accuracy\n"
 
-	previous_weights := create_neural_network(false)
+	previous_weights := create_deep_neural_network(false)
 
 	for epoch_index := 0; epoch_index < config.Epoch_Count; epoch_index++ {
 		if config.Test_While_Training {
@@ -240,7 +247,10 @@ func training(training_data []input) ([][][]float64, string) {
 		for data_index := 0; data_index < len(training_data); data_index++ {
 
 			hidden_nodes := find_hidden_nodes(network, training_data[data_index])
-			//This section prepairs the nodes for dropout to acoid overfitting
+			// This section prepairs the nodes for dropout to avoid overfitting
+			// Extra Note:
+			// I'm not sure How to get this to work with a deep neural network reliably,
+			// so right now it has no functionality if the hidden layer is > 1.
 			var train_hidden_node [][]bool
 			for i := 0; i < config.Hidden_Layers; i++ {
 				var new_trainer []bool
@@ -249,19 +259,18 @@ func training(training_data []input) ([][][]float64, string) {
 					if(rand.Int() % 2 == 1) {
 						new_trainer = append(new_trainer, true)
 					} else {
-						new_trainer = append(new_trainer, true)
+						if config.Hidden_Layers > 1 {
+							new_trainer = append(new_trainer, true)
+						} else {
+							new_trainer = append(new_trainer, false)
+						}
+
 					}
 				}
 				train_hidden_node = append(train_hidden_node, new_trainer)
 			}
-			//###################################################################################
-			//###################################################################################
-			//###################################################################################
-			//###################################################################################
-			//###################################################################################
-			//###################################################################################
 
-			//here we get the error_terms for the hidden_to_output weights
+			//here we get the error_terms for the hidden to output weights
 			//term = output(1 - output)(target - output)
 			var hidden_error_term [][]float64
 			var output_error_term []float64
@@ -278,7 +287,7 @@ func training(training_data []input) ([][][]float64, string) {
 			}
 			hidden_error_term = append(hidden_error_term, output_error_term)
 
-			//here we get the error terms for the Input_to_hidden weights
+			//here we get the error terms for the hidden to hidden weights
 			for layer_index := config.Hidden_Layers - 1; layer_index >= 0; layer_index-- {
 				var new_error_term []float64
 				for j := 1; j < config.Hidden_Count[layer_index] + 1; j++ {
@@ -296,11 +305,7 @@ func training(training_data []input) ([][][]float64, string) {
 				hidden_error_term = append(hidden_error_term, new_error_term)
 			}
 
-			//###################################################################################
-			//###################################################################################
-			//###################################################################################
-
-			//adjusting the input to hidden weights using the output error term.
+			// adjusting the last hidden layers weights using the first hidden error term.
 			for k := 0; k < config.Output_Count; k++ {
 				var layer_index = config.Hidden_Layers - 1
 				for j := 0; j < config.Hidden_Count[layer_index] + 1; j++ {
@@ -313,6 +318,7 @@ func training(training_data []input) ([][][]float64, string) {
 				}
 			}
 
+			// adjusting each hidden to hidden layer's weights using the hidden error terms.
 			for layer_index := config.Hidden_Layers - 2; layer_index > 0; layer_index-- {
 				for k := 0; k < config.Hidden_Count[layer_index + 1]; k++ {
 					for j := 0; j < config.Hidden_Count[layer_index] + 1; j++ {
@@ -326,7 +332,7 @@ func training(training_data []input) ([][][]float64, string) {
 				}
 			}
 
-			//adjusting the input to hidden weights using the hidden error term.
+			// adjusting the input to first hidden layer weights using the last hidden error term.
 			for j := 0; j < config.Hidden_Count[0]; j++ {
 				if(train_hidden_node[0][j + 1]) {
 					for i := 0; i < config.Input_Count; i++ {
@@ -337,12 +343,6 @@ func training(training_data []input) ([][][]float64, string) {
 					}
 				}
 			}
-			//###################################################################################
-			//###################################################################################
-			//###################################################################################
-			//###################################################################################
-			//###################################################################################
-			//###################################################################################
 		}
 	}
 	if config.Progress_Tracker {
@@ -467,6 +467,7 @@ func main() {
 	results := ""
 
 	if config.Training {
+		// if the training is set to true, it trains the neural network
 		network, results = training(data)
 
 		network_json, err := json.Marshal(network)
@@ -481,24 +482,15 @@ func main() {
 			fmt.Println([]byte(network_json))
 		}
 	} else {
+		// if the training is set to false, it tests the neural network
 		log.Print("Reading Trained Neural Network File ", config.Neural_Network_File)
-		/*
-		file, err := os.Open(config.Neural_Network_File)
+		file, _ := ioutil.ReadFile(config.Neural_Network_File)
 		if err != nil {
 			log.Print("Error occured when opening ",
 				config.Neural_Network_File, "\n", err)
 			os.Exit(-1)
 		}
-		reader := bufio.NewReader(file)
-		line, err := reader.Read()
-		if err != nil {
-			log.Println("Error occured while reading through ",
-				    config.Neural_Network_File + "\n\t\t", err)
-			os.Exit(-1)
-		}
-		*/
-		line, _ := ioutil.ReadFile(config.Neural_Network_File)
-		json.Unmarshal([]byte(line), &network)
+		json.Unmarshal([]byte(file), &network)
 		results, _ = run_test(network, data)
 	}
 

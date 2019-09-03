@@ -1,14 +1,15 @@
 # Deep Neural Network Trainer
 ### Summary
-This program is set up in such a way that you can run it to train a neural network using a JSON config file. There are several different variables you can pass into the file, and it will run accordingly based on those inputs. When the program finishes training the nerual network, it will turn the network into a JSON string, and output it into stdout, or a file of your choosing. This program does not apply the nerual network to a test set, it is only set up to train a network, and then output it.
+This program is set up in such a way that you can run it to train a deep neural network using a JSON config file. There are several different variables you can pass into the file, and it will run accordingly based on those inputs. When the program finishes training the deep nerual network, it will turn the network into a JSON string, and output it into stdout, or a file of your choosing. This program does not apply the nerual network to a test set, it is only set up to train a network, and then output it. If you want to test your network when you finish, you can run the program with the **true_if_training** set to **false**, with all of the proper flags set, and it will test your network. 
 
-This program is being converted into a fully functional Neural Network trainer, and then converted into a deep Nerual Network trainer.
+Just an asside, this Deep Neural Network works, but it is not perfect. I am not a Machine Learning expert, I did this as a fun side project. If you have any questions, or any tips let me know and I will try to answer/impliment them. 
 
 ### Config file inputs
 **data\_file\_location** - (*string*) The file location of the dataset to be used in training or testing.
 * **Notice:** The training data needs to be a .csv file.
 
 **neural\_network\_file\_location** - (*string*) The location where the trained deep neural network will be stored when training finishes. Leaving empty prints to console.\
+* **Notice:** if you have **true_if_training** set to **false** this will look for a deep neural network formated in the same way my program formats deep neural networks to use to test the data set.
 **output\_file\_location** - (*string*) The location where output is sent. Leaving empty prints to console.\
 **log\_file\_location** - (*string*) The location where logging is sent. Leaving empty prints to console.\
 **true_if_training** - (*bool*) Setting this bool to **true** will make the program train a new neural network, and setting it to **false** will instead test a Neural Network that this program creates.\
@@ -23,7 +24,7 @@ This program is being converted into a fully functional Neural Network trainer, 
 **number\_of\_output\_nodes** - (*int*) This is the total number of different kinds of inputs there are.\
 **number\_of\_hidden\_layers** - (*int*) This is the number of hidden layers you want the deep neural network to have.\
 **number\_of\_epochs** - (*int*) The number of epochs you want the neural netowrk to train through. The default is 50.\
-**epoch\_update** - (*int*) The number of epochs that need to pass for the log to output an update. The default is 1.
+**epoch\_update** - (*int*) The number of epochs that need to complete for the log to output an update. The default is 1.
 * **Notice:** output\_progress must be **true** for this to work.
 
 **target\_values** - (*[][]float64*) This is the training values you want to use. The must all be > 0 and < 1, and the matrix must be a square matrix.
@@ -33,9 +34,6 @@ This program is being converted into a fully functional Neural Network trainer, 
 **maximum_value** - (*float64*) Set this to the highest possible value of the data.\
 **momentum** - (*float64*) Set this to what you want the momentum to be. It must be > 0 and < 1. The default is 0.9.\
 **learning\_rate** - (*float64*) Set this to what you want the learning rate to be. It must be > 0 and < 1. The default is 0.1.\
-
-
-
 
 ### How to format your training document
 1. The format of this file needs to be a .csv. 
@@ -47,4 +45,4 @@ This program is being converted into a fully functional Neural Network trainer, 
 5. Every value in the input needs to be seperated with a comma and each input on a new line of the document. 
 
 ### Example data format
-Example training format can be found here XXXXXXXXXXLINK\_TO\_TRAINING\_CSVXXXXXXXXXX.
+Example training format can be found [here](https://www.kaggle.com/oddrationale/mnist-in-csv#mnist_test.csv)\
