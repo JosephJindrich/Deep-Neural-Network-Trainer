@@ -34,12 +34,12 @@ type Config struct {
 	Learning_Rate           float64       `json:"learning_rate"`
 }
 
-
 //********************************************************************
 //name:		config_error_checking
 //purpose:	This function checks the input config variables to 
 //		make sure the software will run smoothly
 //********************************************************************
+
 func config_error_checking () error {
 	error_string := "There are some config errors that need to be fixed before runtime.\n"
 	errors := 0
