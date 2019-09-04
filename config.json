@@ -1,11 +1,9 @@
 {
 	"true_if_training":false,
 	"data_file_location":"./Files/test.csv",
-	"training_data_locationx":"./Files/training.csv",
 	"neural_network_file_location":"./Outputs/Trained_Neural_Network.txt",
 	"log_file_location":"./Log/deep_neural_network_training.log",
 	"output_file_location":"./Outputs/Output.txt",
-	"output_file_locationx":"./Outputs/Output.txt",
 	"output_confusion_matrix":true,
 	"collect_training_test_data":true,
 	"output_progress":true,
