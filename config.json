@@ -6,7 +6,7 @@
 	"log_file_location":"./Log/deep_neural_network_training.log",
 	"output_file_location":"./Outputs/Output.txt",
 	"output_file_locationx":"./Outputs/Output.txt",
-	"output_confusion_matrix":false,
+	"output_confusion_matrix":true,
 	"collect_training_test_data":true,
 	"output_progress":true,
 	"use_default_target":true,

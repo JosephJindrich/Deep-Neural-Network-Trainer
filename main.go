@@ -484,14 +484,18 @@ func main() {
 	} else {
 		// if the training is set to false, it tests the neural network
 		log.Print("Reading Trained Neural Network File ", config.Neural_Network_File)
-		file, _ := ioutil.ReadFile(config.Neural_Network_File)
+		file, err := ioutil.ReadFile(config.Neural_Network_File)
 		if err != nil {
 			log.Print("Error occured when opening ",
 				config.Neural_Network_File, "\n", err)
 			os.Exit(-1)
 		}
 		json.Unmarshal([]byte(file), &network)
-		results, _ = run_test(network, data)
+		var matrix [][]int
+		results, matrix = run_test(network, data)
+		string_matrix := csv_styled_confusion_matrix(matrix)
+		results += "\n" + string_matrix
+
 	}
 
 	if config.Output_File != "" {

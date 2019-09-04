@@ -17,7 +17,7 @@ go main.go config.go
 In order to run this software you have to create a config file. An example config file called config.json is included in the repository. The different inputs you need to have for the config file and their format are included in the Config file inputs section.\
 The command to run the code is\
 ```
-./main -conf="LOCATION_OF_CONFIG_FILE"
+./main -config="LOCATION_OF_CONFIG_FILE"
 ```
 Where LOCATION\_OF\_CONF\_FILE = the location of your config file.\
 
