@@ -462,6 +462,12 @@ func main() {
 	setup_log()
 	log.Print("Starting Up")
 	log.Print("Using config file ", *configPathFlag)
+	err := config_error_checking()
+	if err != nil {
+		log.Println(err)
+		os.Exit(-1)
+	}
+
 	data := read_csv()
 	var network [][][]float64
 	results := ""
