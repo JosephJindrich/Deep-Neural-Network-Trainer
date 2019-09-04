@@ -1,8 +1,31 @@
 # Deep Neural Network Trainer
 ### Summary
-This program is set up in such a way that you can run it to train a deep neural network using a JSON config file. There are several different variables you can pass into the file, and it will run accordingly based on those inputs. When the program finishes training the deep nerual network, it will turn the network into a JSON string, and output it into stdout, or a file of your choosing. This program does not apply the nerual network to a test set, it is only set up to train a network, and then output it. If you want to test your network when you finish, you can run the program with the **true_if_training** set to **false**, with all of the proper flags set, and it will test your network. 
+This program is set up in such a way that you can run it to train a deep neural network using a JSON config file. There are several different variables you can pass into the file, and it will run accordingly based on those inputs. When the program finishes training the deep nerual network, it will turn the network into a JSON string, and output it into stdout, or a file of your choosing. This program does not apply the nerual network to a test set, it is only set up to train a network, and then output it. If you want to test your network when you finish, you can run the program with the **true_if_training** set to **false**, with all of the proper flags set, and it will test your network./
 
 Just an asside, this Deep Neural Network works, but it is not perfect. I am not a Machine Learning expert, I did this as a fun side project. If you have any questions, or any tips let me know and I will try to answer/impliment them. 
+
+### How to Build and Run the Software
+
+##### Build
+Requirments:\
+In order to build the project, all you need is [go](https://golang.org/) installed onto your computer. 
+The command to build it is\
+```
+go main.go config.go
+```
+##### Run
+In order to run this software you have to create a config file. An example config file called config.json is included in the repository. The different inputs you need to have for the config file and their format are included in the Config file inputs section.\
+The command to run the code is\
+```
+./main -conf="LOCATION_OF_CONFIG_FILE"
+```
+Where LOCATION\_OF\_CONF\_FILE = the location of your config file.\
+
+### Outputs
+This software has a few outputs.\
+1. **Log File**: This will be some information about the program as it's running based on iputs passed in by the config file.
+2. **Output File**: This is some text formatted in a csv friendly way that has information about the training as it ran.
+3. **Trained Deep Neural Network**: This is the trained neural network. It will contain the neural network trained with the specifications of your config file.
 
 ### Config file inputs
 **data\_file\_location** - (*string*) The file location of the dataset to be used in training or testing.
